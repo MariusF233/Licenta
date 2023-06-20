@@ -1,0 +1,15 @@
+
+your client id
+647246637277-qngakog7ku1k14ehlgkn7ornb7b1er9f.apps.googleusercontent.com
+
+your client secret
+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
+
+redirect URL
+http://localhost/Licenta/home.php
+
+app id
+840444747158718
+
+secret key
+62e21cedd69eaee23137b145f4e19e82
