@@ -35,7 +35,7 @@ session_start();
             $adminName = "admin";
             if (isset($_SESSION["userName"])) {
 
-                echo"
+                echo "
                 <li class='menu_item'>
                <a href='orarul_meu.php'>
                    <h5>ORARUL MEU</h5>
@@ -58,7 +58,7 @@ session_start();
             }
 
             ?>
-           
+
             <li class="menu_item">
                 <a href="contact_us.php">
                     <h5>CONTACT US</h5>
@@ -78,7 +78,43 @@ session_start();
     <div class="homepage_section">
         <h1>LOGIN</h1>
 
+        <div class="register_section">
+        
 
+        <form class="register_form" action="submit/login.sub.php" method="post">
+            <div class="border_line"></div>
+
+            <label  >name:</label>
+            <input type="text" name="name" class="register_form_text" placeholder="your name" />
+            
+           
+            <label >password:</label>
+            <input type="password" name="password" class="register_form_text" placeholder="your password" />
+             
+            
+            
+            <button type="submit" name="submit" class="register_btn"> Login </button>
+          
+          
+        <?php
+   
+   if(isset($_GET["error"])){
+       if($_GET["error"]=="emptyinput"){
+           echo "<h3>Empty fields</h3>";
+       }
+       else if($_GET["error"]=="wrongName")
+       {
+        echo "<h3>wrong name</h3>";
+       }
+       else if ($_GET["error"]=="wrongPassword")
+       {
+        echo "<h3>wrong password</h3>";
+       }
+      
+   }
+   
+   ?>
+   
 
 
 
@@ -89,14 +125,15 @@ session_start();
         require_once 'config.php';
         //error_reporting(0);
 
-
+      
 
 
         echo "
-  <button type='submit' name='login' class='register_btn'> <a  href='" . $client->createAuthUrl() . "'>Google Login</a> </button>";
+         <button type='submit' name='login' class='register_btn'> <a  href='" . $client->createAuthUrl() . "'>Google Login</a> </button>";
 
         ?>
-
+     </form>
+    </div>
     </div>
     <div class="social_menu">
         <div class="media_button">

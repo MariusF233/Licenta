@@ -12,10 +12,14 @@ include("links.php");
     <link rel="stylesheet" type="text/css" href="./css/activities_style3.css?v=1">
     <!--  <link rel="stylesheet" href="./css/calendar_style.css" type="text/css">-->
 
-  <!--  <link rel="stylesheet" href=".css/chatbox.css"> -->
+    <!--  <link rel="stylesheet" href=".css/chatbox.css"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+
+
 </head>
 
 <body class="intunecat1">
@@ -74,7 +78,11 @@ include("links.php");
                         <h5>DOCUMENTATIE</h5>
                     </a>
                 </li>
-
+                <div id="users_name">
+                    <?php
+                    echo $_SESSION['userName'];
+                    ?>
+                </div>
 
 
             </ul>
@@ -231,16 +239,12 @@ include("links.php");
                                         echo "<button class='button_delete' id='button_delete' >X</button></div>";
                                     }
                                 }
-
-
-
-
- }
-echo "<script src='delete_activity.js'>
+                            }
+                            echo "<script src='delete_activity.js'>
 
 </script>";
 
-echo "
+                            echo "
 </div>
 
 
@@ -345,37 +349,8 @@ echo "
 
 
     </div>
-    <div class="chatbox1">
-        <div class="modal-dialog">
-
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4>Chats:<h4>
-
-                </div>
-
-                <div class="modal-body">
-                    <ul>
-                        <?php
-                        $titlu_pagina = "chatbox.php";
-                        $users = mysqli_query($conn, "SELECT * FROM users2");
-
-                        while ($user = mysqli_fetch_assoc($users)) {
-                            echo "<li>
-                         <a href='" . $titlu_pagina . "?userId=" . $user['full_name'] . "'>" . $user['full_name'] . "</a>
 
 
-                           </li>";
-                        };
-
-
-
-                        ?>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
     <!--  <div class="new_visit_section">
         <div>
             <h1>ADAUGA ACTIVITATE</h1>
@@ -526,6 +501,7 @@ echo "
             }
         }
 
+
         ?>
 
 
@@ -533,6 +509,28 @@ echo "
     </div>
     -->
 
+    <div id="chatbox">
+    <div id="receiver">
+        <select id="receiver-dropdown">
+            <?php
+            require('submit/database_handler.php');
+            $sql = "SELECT * FROM users2;";
+            $result = mysqli_query($conn, $sql);
+
+            if ($result) { // Check if the query was successful.
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if($row['full_name']!=$_SESSION['userName']){
+                    echo "<option>" . $row['full_name'] . "</option>";
+                    }
+                }
+            }
+            ?>
+        </select>
+    </div>
+    <div id="messages"></div>
+    <input type="text" id="message" placeholder="Type a message">
+    <button onclick="sendMessage()">Send</button>
+</div>
 
 
     <div class="social_menu">
@@ -557,6 +555,61 @@ echo "
             </a>
         </div>
     </div>
+
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8080');
+        const messagesDiv = document.getElementById('messages');
+        const sender = "<?php echo $_SESSION['userName']; ?>"; // Use PHP to get the username.
+
+        ws.onmessage = (event) => {
+    try {
+        const message = JSON.parse(event.data);
+        appendMessage(message.user, message.message);
+    } catch (error) {
+        console.error('Received invalid JSON:', event.data);
+        // Handle the unexpected data here, or ignore it if needed.
+    }
+};
+function sendMessage() {
+    const messageInput = document.getElementById('message');
+    const message = messageInput.value;
+    const receiver = document.getElementById('receiver-dropdown').value;
+    const messageObject = {
+        user: sender,
+        receiver,
+        message
+    };
+
+    try {
+        ws.send(JSON.stringify({ user: sender, receiver, message }));
+
+        appendMessage(sender, message);
+        messageInput.value = '';
+    } catch (error) {
+        console.error('Error sending message:', error);
+    }
+}
+
+
+      /*  function sendMessage() {
+            const messageInput = document.getElementById('message');
+            const message = messageInput.value;
+            const receiver = document.getElementById('receiver-dropdown').value; // Get the selected receiver.
+            ws.send(JSON.stringify({
+                user: sender,
+                receiver,
+                message
+            })); // Include sender and receiver.
+            appendMessage(sender, message);
+            messageInput.value = '';
+        }
+*/
+        function appendMessage(user, message) {
+            messagesDiv.innerHTML += `<p><strong>${user}:</strong> ${message}</p>`;
+        }
+    </script>
 </body>
+
 
 </html>
